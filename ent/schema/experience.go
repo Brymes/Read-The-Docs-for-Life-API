@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 	"time"
@@ -17,13 +18,19 @@ func (Experience) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("uuid", uuid.UUID{}).Default(uuid.New),
 		field.Time("created_at").Default(time.Now),
-		field.String("Title").NotEmpty().MaxLen(75),
-		field.Text("Content").Unique().NotEmpty(),
-		field.Int("Views").Positive(),
+		field.String("title").NotEmpty().MaxLen(75),
+		field.Text("content").Unique().NotEmpty(),
+		field.Int("views").Positive(),
+		field.Int("likes").Positive(),
 	}
 }
 
 // Edges of the Experience.
 func (Experience) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("comments", Comments.Type),
+		edge.From("user", User.Type).
+			Ref("posts").
+			Unique(),
+	}
 }
